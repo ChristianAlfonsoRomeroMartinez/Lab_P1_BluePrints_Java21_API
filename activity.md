@@ -331,3 +331,73 @@ http://localhost:8081/v3/api-docs
 ![2](img/4/2.png)
 
 ---
+
+## Parte 5 - Filtros de Blueprints
+
+### Implementación de filtros
+
+Los filtros ya los habiamos implementado desde puntos anteriores como lo fue:
+- IdentityFilter 
+- RedundancyFilter 
+- UndersamplingFilter 
+
+**Interfaz base:** [BlueprintsFilter.java](src/main/java/edu/eci/arsw/blueprints/filters/BlueprintsFilter.java)
+
+
+### Filtros implementados
+
+#### 1. IdentityFilter (por defecto)
+
+**Archivo:** [IdentityFilter.java](src/main/java/edu/eci/arsw/blueprints/filters/IdentityFilter.java)
+
+- No modifica el blueprint, lo retorna tal cual.
+
+- Activo cuando no se especifica ningún perfil de Spring.
+
+
+---
+
+#### 2. RedundancyFilter
+
+**Archivo:** [RedundancyFilter.java](src/main/java/edu/eci/arsw/blueprints/filters/RedundancyFilter.java)
+
+- Elimina puntos consecutivos duplicados (misma coordenada x,y).
+
+- `redundancy`
+
+
+**Se utiliza cundo**
+- Datos capturados con puntos repetidos por error de sensores
+- Dibujos con trazos que permanecen en la misma posición
+- Optimización de almacenamiento eliminando redundancias
+
+---
+
+#### 3. UndersamplingFilter
+
+**Archivo:** [UndersamplingFilter.java](src/main/java/edu/eci/arsw/blueprints/filters/UndersamplingFilter.java)
+
+- Reduce la densidad conservando 1 de cada 2 puntos (índices pares: 0, 2, 4...).
+
+- `undersampling`
+
+**Se utiliza cunado:**
+1. Recorre los puntos del blueprint
+2. Solo conserva puntos en índices pares (i % 2 == 0)
+3. Si hay ≤ 2 puntos, retorna sin modificar
+
+- Reducir ancho de banda en transmisión de datos
+- Visualización de previews con menor nivel de detalle
+- Procesamiento más rápido con menos puntos
+
+---
+
+### Integración con el servicio
+
+**Archivo:** [BlueprintsServices.java](src/main/java/edu/eci/arsw/blueprints/services/BlueprintsServices.java)
+
+
+- El filtro solo se aplica en `getBlueprint()` individual, no en `getAllBlueprints()` ni `getBlueprintsByAuthor()`.
+
+![1](img/5/1.png)
+
