@@ -66,10 +66,10 @@ Almacena los puntos:
 ---
 
 #### schema.sql - Creación de tablas
-**Archivo:** [postgres_data/schema.sql](postgres_data/schema.sql)
+**Archivo:** [schema.sql](postgres_data/schema.sql)
 
 #### data.sql - Datos iniciales
-**Archivo:** [postgres_data/data.sql](postgres_data/data.sql)
+**Archivo:** [data.sql](postgres_data/data.sql)
 
 Inserta 3 blueprints de prueba
 
@@ -79,7 +79,7 @@ Inserta 3 blueprints de prueba
 
 ### Configuración de Spring Boot
 
-**Archivo:** [src/main/resources/application.properties](src/main/resources/application.properties)
+**Archivo:** [application.properties](src/main/resources/application.properties)
 
 Los scripts SQL se ejecutan automáticamente desde Docker, configuré `spring.sql.init.mode=never` para evitar ejecución duplicada.
 
@@ -95,7 +95,7 @@ Agregué las dependencias necesarias para conectar Java con PostgreSQL:
 
 ### Implementación PostgresBlueprintPersistence
 
-**Archivo:** [src/main/java/.../persistence/PostgresBlueprintPersistence.java](src/main/java/edu/eci/arsw/blueprints/persistence/PostgresBlueprintPersistence.java)
+**Archivo:** [PostgresBlueprintPersistence.java](src/main/java/edu/eci/arsw/blueprints/persistence/PostgresBlueprintPersistence.java)
 
 Esta clase reemplaza a `InMemoryBlueprintPersistence` usando PostgreSQL.
 
@@ -187,4 +187,86 @@ logging.level.org.springframework.jdbc.core=DEBUG
 
 ---
 
+## Parte 3 - Buenas prácticas de API REST
+
+
+
+### 1. Versionamiento de API - Path base `/api/v1/blueprints`
+
+**Cambio realizado en:** [BlueprintsAPIController.java](src/main/java/edu/eci/arsw/blueprints/controllers/BlueprintsAPIController.java)
+
+```java
+
+@RequestMapping("/api/v1/blueprints")  
+
+```
+
+**Antes:** `http://localhost:8080/blueprints`  
+**Ahora:** `http://localhost:8080/api/v1/blueprints`
+
+- **`/api/`**: Separa endpoints REST de páginas web estáticas o frontend
+
+  - Permite mantener múltiples versiones en paralelo durante migraciones
+
+- Tambien se modificaron los metodos con para usar la clase ApiResponse en los end points
+
+---
+
+### 2. Clase `ApiResponse<T>` - Respuestas uniformes
+
+**Archivo:** [ApiResponse.java](src/main/java/edu/eci/arsw/blueprints/dto/ApiResponse.java)
+
+
+
+#### `record` 
+- **Inmutabilidad**
+- **Getters automáticos**: 
+- **JSON limpio**: Serializa directamente a `{"code":200, "message":"...", "data":{...}}`
+
+#### Factory methods implementados:
+
+| Método | Código HTTP | Uso |
+|--------|-------------|-----|
+| `success(T data)` | 200 | Consultas exitosas (GET) |
+| `created(T data)` | 201 | Recurso creado (POST) |
+| `accepted()` | 202 | Actualización aceptada (PUT) |
+| `badRequest(String msg)` | 400 | Validación fallida |
+| `notFound(String msg)` | 404 | Recurso no existe |
+| `Error internal server(String msg)` | 500 | Error en el servidor |
+| `error(int code, String msg)` | Personalizado | Errores genéricos |
+
+#### Formato JSON de respuesta:
+```json
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "author": "john",
+    "name": "house",
+    "points": [{"x":0,"y":0}, {"x":10,"y":0}]
+  }
+}
+```
+
+
+---
+
+#### Tabla de códigos implementados:
+
+| Endpoint | Método | Éxito | Error |
+|----------|--------|-------|-------|
+| `/api/v1/blueprints` | **GET** | `200 OK` | - |
+| `/api/v1/blueprints/{author}` | **GET** | `200 OK` | `404 Not Found` |
+| `/api/v1/blueprints/{author}/{name}` | **GET** | `200 OK` | `404 Not Found` |
+| `/api/v1/blueprints` | **POST** | **`201 Created`** | `400 Bad Request` |
+| `/api/v1/blueprints/{author}/{name}/points` | **PUT** | **`202 Accepted`** | `404 Not Found` |
+
+
+### Capturas de funcionamiento
+
+![1](img/3/1.png)
+![2](img/3/2.png)
+![3](img/3/3.png)
+
+---
 
