@@ -262,5 +262,11 @@ logging.level.org.springframework.jdbc.core=DEBUG
 | `/api/v1/blueprints/{author}/{name}/points` | **PUT** | **`202 Accepted`** | `404 Not Found` |
 
 
+### Capturas de funcionamiento
+
+![1](img/3/1.png)
+![2](img/3/2.png)
+![3](img/3/3.png)
 
 ---
+
