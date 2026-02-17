@@ -184,7 +184,6 @@ Agregar a `application.properties`:
 ```properties
 logging.level.org.springframework.jdbc.core=DEBUG
 ```
-
 ---
 
 ## Parte 3 - Buenas prácticas de API REST
@@ -270,3 +269,65 @@ logging.level.org.springframework.jdbc.core=DEBUG
 
 ---
 
+
+## Parte 4 - OpenAPI / Swagger
+
+### Configuración de springdoc-openapi
+
+Ya contaba con la dependencia de `springdoc-openapi` en `pom.xml`:
+
+
+Esta dependencia proporciona:
+- OpenAPI 3.0
+- **Swagger UI
+- Generación automática
+
+---
+
+### Implementación
+
+#### 1. Configuración mejorada de OpenAPI
+
+**Archivo:** [OpenApiConfig.java](src/main/java/edu/eci/arsw/blueprints/config/OpenApiConfig.java)
+
+#### 2. Anotaciones en el controlador
+
+Agregamos anotaciones OpenAPI a cada endpoint:
+
+**Archivo:** [BlueprintsAPIController.java](src/main/java/edu/eci/arsw/blueprints/controllers/BlueprintsAPIController.java)
+
+**Anotaciones utilizadas:**
+- `@Tag` - Agrupa endpoints relacionados
+- `@Operation` - Describe el endpoint
+- `@ApiResponses` - Documenta las respuestas HTTP posibles
+- `@ApiResponse` - Define cada código de respuesta
+- `@Content` - Especifica el tipo de contenido en la respuesta
+- `@Schema` - Referencia el modelo de datos
+
+---
+
+#### 3. Tabla de endpoints documentados
+
+| Endpoint | Método | Summary | Respuestas HTTP |
+|----------|--------|---------|-----------------|
+| `/api/v1/blueprints` | **GET** | Obtener todos los blueprints | `200` |
+| `/api/v1/blueprints/{author}` | **GET** | Obtener blueprints por autor | `200`, `404` |
+| `/api/v1/blueprints/{author}/{bpname}` | **GET** | Obtener un blueprint específico | `200`, `404` |
+| `/api/v1/blueprints` | **POST** | Crear un nuevo blueprint | `201`, `400` |
+| `/api/v1/blueprints/{author}/{bpname}/points` | **PUT** | Agregar un punto a un blueprint | `202`, `404` |
+
+---
+
+### Acceso a la documentación
+
+**Acceso Swagger UI:**
+
+ http://localhost:8081/swagger-ui.html
+
+#### OpenAPI JSON
+http://localhost:8081/v3/api-docs
+
+![1](img/4/1.png)
+![2](img/4/2.png)
+
+---
