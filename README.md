@@ -122,3 +122,7 @@ src/main/java/edu/eci/arsw/blueprints
 
 - Imagen de contenedor (`spring-boot:build-image`).  
 - Métricas con Actuator.  
+
+
+# La solcuion y evidencias del laboratorio
+[activity.md](activity.md)

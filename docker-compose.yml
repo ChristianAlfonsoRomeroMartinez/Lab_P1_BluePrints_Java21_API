@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:18.2
+    container_name: blueprints-postgres
+    restart: always
+    ports:
+      - "5441:5432"
+    environment:
+      POSTGRES_USER: blueprints
+      POSTGRES_PASSWORD: blueprints
+      POSTGRES_DB: blueprints_db
+
+    volumes:
+     
+      - ./postgres_data/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./postgres_data/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+
+
+
+volumes:
+  postgres_data_vol:
